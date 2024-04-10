@@ -1,13 +1,12 @@
 <template>
   <div class="bg-white py-4 px-4 rounded-[4px]">
-    <table-component :columns="columns">
+    <table-component :columns="columns" @changeRows="clickBtn"  :items="items" :loading="isLoading" :totalRecords="meta.total_records_count" :perPage="meta.per_page">
       <template #tableHeader>
         <div>
-          <top-header :title="title" :desc="desc" :hasButton="false"/>
+          <top-header :title="title" :desc="desc" :hasButton="false" />
         </div>
       </template>
     </table-component>
-
   </div>
 </template>
 
@@ -17,7 +16,7 @@ import TopHeader from '@/components/utils/top-header.vue'
 export default {
   components: {
     TableComponent,
-    TopHeader,
+    TopHeader
   },
   data() {
     return {
@@ -25,30 +24,46 @@ export default {
       desc: 'This shows the list of users',
       buttonText: 'Add new employee +',
       columns: [
-        { field: 'code', header: 'ID' },
-        { field: 'name', header: 'Email' },
-        { field: 'category', header: 'Country' },
-        { field: 'quantity', header: 'Gender' },
-        { field: 'quantity', header: 'Action' }
+        { field: 'ID', header: 'ID' },
+        { field: 'fullName', header: 'Name' },
+        { field: 'user_email', header: 'Email' },
+        { field: 'display_name', header: 'Display Name' }
       ],
-      employees: []
+      items: [],
+      isLoading: false,
+      page: 1,
+      meta: {},
+      per_page: 10
     }
   },
 
   methods: {
-    // async getEmployees(){
-    //   try {
-    //     const vReq = await this.$request.get(`employers/employee`)
-    //     console.log(vReq);
-    //     this.employees = vReq.data.data
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
+    async getUsers() {
+      this.isLoading = true
+      try {
+        const vReq = await this.$request.get(
+          `wp-json/rimplenet/v3/users?page_no=${this.page}&per_page=${this.per_page}&order_by=ID&order=DESC&metas_to_retrieve=nll_user_email_address_verified,eth_crypto_wallet_deposit_address,phone_number,rimplenet_referrer_sponsor,user_withdrawable_bal_usdt,user_withdrawable_bal_usdt_locked,user_withdrawable_bal_usdt_referral_bonus`
+        )
+        console.log(vReq)
+        let resPayload = vReq.data
+        this.items = resPayload.data
+        this.meta = resPayload.meta.pagination
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    clickBtn(e){
+      this.per_page = e.rows
+      this.page = e.page+1
+      this.getUsers()
+    }
   },
 
-  beforeMount(){
-    
+  beforeMount() {
+    this.getUsers()
   }
 }
 </script>

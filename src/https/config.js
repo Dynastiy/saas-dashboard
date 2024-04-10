@@ -1,5 +1,5 @@
 const config = {
-    baseUrl: "",
+    baseUrl: "https://backend.raflex.io/",
     middlewareUrl:  ""
 }
 

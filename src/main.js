@@ -95,14 +95,19 @@ import "vue-select/dist/vue-select.css";
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Paginator from 'primevue/paginator';
 
 app.component('DataTable', DataTable)
 app.component('TableColumn', Column)
+app.component('Paginator', Paginator)
 
 app.config.globalProperties.$axios = axios
 
 import config from '@/https/config'
 app.config.globalProperties.$config = config
+
+import $request from '@/https/axios'
+app.config.globalProperties.$request = $request
 
 // app.use(createPinia())
 app.use(router)
